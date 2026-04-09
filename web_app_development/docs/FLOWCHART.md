@@ -1,4 +1,4 @@
-# 線上占卜系統 — 流程圖設計 (Flowchart)
+# 線上占卜系統 — 流程圖設計 (Flowchart Design)
 
 > **版本：** v1.0
 > **建立日期：** 2026-04-09
@@ -8,90 +8,87 @@
 
 ## 1. 使用者流程圖 (User Flow)
 
-描述使用者進入系統後的主要操作路徑。
+描述使用者從開啟網頁到完成占卜與查看紀錄的過程。
 
 ```mermaid
 flowchart TD
-    Start([使用者進入網站]) --> Home[首頁 - 每日指引與導覽]
-    Home --> Nav{選擇動作}
-    
-    Nav -->|未登入| Login[登入 / 註冊頁]
-    Login --> Auth{驗證成功?}
-    Auth -->|是| Profile[個人導覽頁]
-    Auth -->|否| Login
-    
-    Nav -->|前往占卜| FortunePool[占卜中心]
-    FortunePool --> Choice{選擇方式}
-    Choice -->|抽籤| Draw[線上抽籤筒]
-    Choice -->|算命| Calculate[命理資訊輸入]
-    Choice -->|擲筊| Toss[虛擬擲筊]
-    
-    Draw --> Result[顯示籤詩與解籤]
-    Calculate --> Result
-    Toss --> Result
-    
-    Result --> Save{儲存紀錄?}
-    Save -->|是，且已登入| HistoryDB[存入資料庫]
-    Save -->|是，未登入| PromptLogin[提示登入]
-    Save -->|否| Home
-    
-    HistoryDB --> HistoryView[查看歷史紀錄]
-    
-    Nav -->|展示誠意| Donate[模擬捐香油錢]
-    Donate --> FinishDonate[獲得感謝與功德記錄]
-    FinishDonate --> Home
+  Start([使用者開啟網頁]) --> Home[首頁 /]
+  Home --> Auth{是否已登入?}
+  
+  Auth -- 否 --> Login[登入/註冊頁面]
+  Login --> Home
+  
+  Auth -- 是 --> Choice{想執行什麼?}
+  
+  Choice -->|抽籤/占卜| Divination[占卜頁面 /divination]
+  Divination --> Perform[點擊抽籤/擲筊]
+  Perform --> Result[顯示結果與解籤]
+  Result --> Save[系統自動儲存結果]
+  Save --> History
+  
+  Choice -->|捐香油錢| Donate[捐獻頁面 /donate]
+  Donate --> Input[輸入金額與留言]
+  Input --> Thanks[顯示感謝頁面與動畫]
+  
+  Choice -->|查看紀錄| History[個人紀錄頁 /history]
+  History --> Detail[查看單筆詳細內容]
+  
+  Choice -->|個人資料| Profile[帳號管理 /profile]
 ```
 
 ---
 
-## 2. 系統序列圖 (Sequence Diagram)
+## 2. 系統序列圖 (Sequence Diagram) — 以「抽籤」流程為例
 
-以「線上抽籤」為例，描述前端到後端資料庫的完整互動流程。
+描述從前端操作到後端資料處理與資料庫互動的完整生命週期。
 
 ```mermaid
 sequenceDiagram
-    actor User as 使用者
-    participant Browser as 瀏覽器 (Vue/Jinja2)
-    participant Flask as Flask Route (/draw)
-    participant DB as SQLite (fortune.db)
-
-    User->>Browser: 點擊「開始抽籤」
-    Browser->>Flask: POST /api/draw_lot
-    Note left of Flask: 產生隨機數點選籤王
-    Flask->>DB: SELECT * FROM lots WHERE id = random_id
-    DB-->>Flask: 回傳籤詩與白話解釋
-    
-    alt 已登入
-        Flask->>DB: INSERT INTO user_history (user_id, lot_id, type)
-        DB-->>Flask: 成功
-    end
-    
-    Flask-->>Browser: 回傳 JSON 結果 (籤詩、解說、動畫指令)
-    Browser->>User: 顯示抽籤動畫並展示結果頁面
+  actor User as 使用者
+  participant Browser as 瀏覽器 (Frontend)
+  participant Flask as Flask Route (Controller)
+  participant Model as Fortune Model
+  participant DB as SQLite (Database)
+  
+  User->>Browser: 點擊「開始抽籤」
+  Browser->>Flask: GET /divination (或 AJAX POST)
+  
+  Note over Flask, Model: 執行核心占卜邏輯
+  Flask->>Model: 請求隨機籤詩
+  Model->>DB: SELECT * FROM fortune_items ORDER BY RANDOM() LIMIT 1
+  DB-->>Model: 回傳籤詩資料
+  Model-->>Flask: 回傳選中的籤詩物件
+  
+  Note over Flask, DB: 紀錄占卜結果 (若使用者已登入)
+  Flask->>DB: INSERT INTO fortune_records (user_id, item_id, result_text)
+  DB-->>Flask: 儲存成功
+  
+  Flask->>Browser: 渲染 fortune.html (帶入結果資料)
+  Browser-->>User: 顯示抽籤動畫與最終結果
 ```
 
 ---
 
-## 3. 功能清單與路由對照表
+## 3. 功能清單與路徑對照表
 
-本表列出系統核心功能對應的技術實作路徑。
+本表用於後續路由開發 (API Design) 之參考。
 
-| 功能名稱 | 說明 | URL 路徑 | 方法 |
-| :--- | :--- | :--- | :--- |
-| **首頁** | 顯示每日指引與快速入口 | `/` | `GET` |
-| **註冊** | 使用者帳號建立 | `/register` | `GET/POST` |
-| **登入** | 使用者身份驗證 | `/login` | `GET/POST` |
-| **抽籤入口** | 線上抽籤功能頁面 | `/fortune/draw` | `GET/POST` |
-| **算命入口** | 八字/姓名算命輸入頁 | `/fortune/calculate` | `GET/POST` |
-| **擲筊入口** | 線上擲筊動畫頁面 | `/fortune/toss` | `GET/POST` |
-| **歷史紀錄** | 查看個人過去占卜結果 | `/history` | `GET` |
-| **模擬捐款** | 捐獻香油錢操作 | `/donate` | `GET/POST` |
-| **個人資料** | 修改暱稱與頭像 | `/profile` | `GET/POST` |
+| 功能模組 | 操作描述 | 建議 URL 路徑 | HTTP 方法 | 對應頁面 |
+| :--- | :--- | :--- | :--- | :--- |
+| **首頁** | 顯示品牌故事與入口 | `/` | GET | `index.html` |
+| **身分認證** | 使用者登入 | `/login` | GET/POST | `login.html` |
+| **身分認證** | 使用者註冊 | `/register` | GET/POST | `register.html` |
+| **占卜系統** | 選擇占卜類型或抽籤 | `/divination` | GET | `divination.html` |
+| **占卜系統** | 顯示占卜/抽籤結果 | `/divination/result` | POST/GET | `fortune.html` |
+| **香油錢** | 捐贈虛擬金額與留言 | `/donate` | GET/POST | `donate.html` |
+| **紀錄管理**| 列表顯示個人歷史結果 | `/history` | GET | `history.html` |
+| **紀錄管理**| 查看單筆紀錄詳情 | `/history/<id>` | GET | `history_detail.html` |
+| **帳號管理**| 修改暱稱或登出 | `/profile` | GET/POST | `profile.html` |
 
 ---
 
-## 4. 異常處理流程
+## 4. 流程說明
 
-1. **未登入存取保護頁面**：系統將自動重新導向至 `/login`。
-2. **抽籤資料庫異常**：若無法取得籤詩，顯示「神明忙碌中，請稍後再試」提示。
-3. **資料輸入錯誤**：算命輸入資訊不完整時，前端進行 JS 攔截並提示。
+1.  **儀式感優化**：在「抽籤」到「顯示結果」之間，系統會透過前端 CSS/JS 觸發一段動畫，增強使用者的儀式感體驗。
+2.  **自動儲存邏輯**：系統會判斷 `session` 中是否有使用者 ID，若有則在產出結果的同時自動寫入 `fortune_records` 表。
+3.  **封閉式循環**：捐獻香油錢後會引導使用者回到首頁或紀錄頁，強化「捐獻 -> 功德 -> 紀錄」的正向循環感。
