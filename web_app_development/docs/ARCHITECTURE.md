@@ -1,4 +1,4 @@
-# 線上占卜系統 — 系統架構設計 (Architecture)
+# 線上占卜系統 — 系統架構設計 (Architecture Design)
 
 > **版本：** v1.0
 > **建立日期：** 2026-04-09
@@ -9,93 +9,81 @@
 
 ## 1. 技術架構說明
 
-本系統採用 **Flask MVC (Model-View-Controller)** 模式進行開發。這是一種經典的設計模式，旨在將資料處理、使用者介面與業務邏輯分離，提高程式碼的可維護性。
+本專案採用典型的 **單體式架構 (Monolithic Architecture)**，並遵循 **MVC (Model-View-Controller)** 設計模式。這種架構適合快速開發與部署，且能滿足本專案對於高品質視覺效果與伺服器端渲染的需求。
 
-### MVC 職責分配：
-- **Model (模型 - `app/models/`)**：負責與 SQLite 資料庫溝通。定義資料表的結構（Schema）以及資料增刪查改的邏輯。
-- **View (視圖 - `app/templates/`)**：使用 Jinja2 模板引擎。負責將資料動態地渲染成 HTML 頁面呈現給使用者。
-- **Controller (控制器 - `app/routes/`)**：負責接收使用者的請求、呼叫 Model 取得資料、處理邏輯後將結果丟給 View 渲染。
+### 選用技術與原因
+- **後端 (Python + Flask)**: 輕量級框架，擴充性強，適合中小型 Web 專案。
+- **模板引擎 (Jinja2)**: Flask 內建，能高效地將後端資料注入 HTML，實現動態頁面。
+- **資料庫 (SQLite)**: 無需額外安裝資料庫伺服器，將資料儲存在單一檔案中，方便開發與分發。
+- **前端 (HTML + Vanilla CSS)**: 不使用重型框架，專注於利用 CSS 動畫打造極致的占卜體驗。
+
+### MVC 模式職責分配
+- **Model (模型)**: 負責與 SQLite 資料庫互動，定義資料結構（如：使用者、占卜紀錄、籤詩庫）。
+- **View (視圖)**: 使用 Jinja2 模板產出 HTML，負責將資料呈現給使用者。
+- **Controller (控制器)**: 即 Flask 的路由 (Routes)，負責處理 HTTP 請求、呼叫 Model 取得資料，並決定渲染哪個 View。
 
 ---
 
 ## 2. 專案資料夾結構
 
-為了保持專案整潔且符合 Flask 的最佳實踐，我們規劃如下結構：
-
 ```text
 web_app_development/
-├── app/                      # 核心應用程式程式碼
-│   ├── models/               # 資料庫模型 (ORM 或 SQL 封裝)
-│   │   ├── __init__.py
-│   │   ├── user.py           # 會員相關資料
-│   │   └── fortune.py        # 占卜紀錄與籤詩資料
-│   ├── routes/               # 路由與邏輯 (Controller)
-│   │   ├── __init__.py
-│   │   ├── main.py           # 首頁、占卜入口
-│   │   ├── auth.py           # 註冊、登入邏輯
-│   │   └── actions.py        # 抽籤、捐款等具體行為
-│   ├── static/               # 靜態資源
-│   │   ├── css/              # 樣式表 (Vanilla CSS)
-│   │   ├── js/               # 前端互動邏輯 (動畫控制)
-│   │   └── img/              # 圖片與圖示
-│   ├── templates/            # Jinja2 HTML 模板 (View)
-│   │   ├── base.html         # 基礎佈局 (側邊欄、導覽列)
-│   │   ├── index.html        # 首頁
-│   │   ├── fortune/          # 占卜相關頁面 (抽籤、算命)
-│   │   └── auth/             # 認證相關頁面 (登入、註冊)
-│   └── __init__.py           # Flask App Factory
-├── instance/                 # 存放不應被 Git 追蹤的安全資料
-│   └── database.db           # SQLite 資料庫檔案
-├── docs/                     # 專案文件 (PRD, Architecture 等)
-├── requirements.txt          # 套件依賴清單
-├── .env                      # 環境變數 (如 Secret Key)
-└── app.py                    # 專案啟動入口
+├── app/
+│   ├── __init__.py      # Flask App 初始化
+│   ├── models/          # 資料庫模型 (Model)
+│   │   ├── user.py      # 使用者相關資料處理
+│   │   └── fortune.py   # 占卜、籤詩、紀錄相關處理
+│   ├── routes/          # 路由處理 (Controller)
+│   │   ├── auth.py      # 註冊、登入邏輯
+│   │   └── main.py      # 占卜、首頁、捐款邏輯
+│   ├── templates/       # HTML 模板 (View)
+│   │   ├── base.html    # 共同佈局
+│   │   ├── index.html   # 首頁
+│   │   ├── login.html   # 登入頁
+│   │   └── fortune.html # 抽籤/結果頁
+│   └── static/          # 靜態資源
+│       ├── css/         # 樣式表 (含動畫定義)
+│       └── js/          # 前端互動邏輯 (如觸發動畫)
+├── instance/
+│   └── database.db      # SQLite 資料庫檔案
+├── database/
+│   └── schema.sql       # 資料庫建表語法
+├── docs/                # 專案文件
+│   ├── PRD.md
+│   └── ARCHITECTURE.md
+├── app.py               # 應用程式啟動入口
+├── README.md
+└── requirements.txt     # 套件依賴清單
 ```
 
 ---
 
 ## 3. 元件關係圖
 
-以下展示了使用者從瀏覽器發出請求到系統回應的資料流向：
+### 資料流向圖 (Mermaid 語法)
 
 ```mermaid
 graph TD
-    User((使用者瀏覽器)) -->|HTTP Request| Route[Flask Routes /app/routes/]
-    Route -->|Query/Save| DB[(SQLite Database)]
-    DB -->|Data Record| Route
-    Route -->|Inject Data| Template[Jinja2 Template /app/templates/]
-    Template -->|Render HTML| User
-    
-    subgraph Core Logic
-    Route
-    Template
-    end
+    User((瀏覽器)) -->|發送請求| Flask[Flask Route / Controller]
+    Flask -->|讀寫資料| Model[Models / SQLite]
+    Model -->|回傳資料| Flask
+    Flask -->|填入資料| Jinja2[Jinja2 Templates / View]
+    Jinja2 -->|渲染 HTML| User
 ```
+
+### 系統交互說明
+1. **使用者操作**：點擊「抽籤」按鈕。
+2. **路由處理**：`app/routes/main.py` 接收到請求，呼叫 `fortune.py` 裡的邏輯隨機選出一支籤。
+3. **資料處理**：Model 將結果存入 `instance/database.db` 的紀錄表中。
+4. **渲染頁面**：路由將選中的籤詩內容傳給 `app/templates/fortune.html`。
+5. **視覺回饋**：瀏覽器載入頁面，執行 `app/static/css/` 中的動畫效果。
 
 ---
 
 ## 4. 關鍵設計決策
 
-### 4.1 採用 Vanilla CSS + 精美動效
-**決策**：不使用 Tailwind 或 Bootstrap，改用原生 CSS 配套高品質動畫。
-**原因**：占卜系統需要強烈的視覺沉浸感（例如搖籤筒、翻牌），原生 CSS 配合 Web Animations API 能提供最細膩的自訂效果。
-
-### 4.2 基於 SQLite 的快速開發
-**決策**：初期使用 SQLite 作為資料庫。
-**原因**：系統主要為個人或小型社群使用，SQLite 無需額外組態，且方便整個專案資料夾的移動與交付。
-
-### 4.3 靜態解籤資料庫
-**決策**：將籤詩內容存放在資料庫中，而不是寫死在程式碼。
-**原因**：方便未來擴增更多的籤詩（如不同的廟宇籤種），且能讓後端邏輯更簡潔。
-
-### 4.4 緩存與效能
-**決策**：首頁每日運勢將根據「日期 + 使用者 ID」計算，不重複呼叫複雜 API。
-**原因**：確保使用者在當天內看到的運勢一致，且減輕資料庫運算負擔。
-
----
-
-## 5. 安全性考量
-
-1. **密碼安全**：使用 `werkzeug.security` 進行密碼雜湊，資料庫絕不存放明文密碼。
-2. **CSRF 保護**：所有表單提交均包含 CSRF Token。
-3. **路徑保護**：佔卜紀錄與功德箱紀錄僅限登入使用者可存取。
+1. **伺服器端渲染 (SSR)**: 選擇 Flask + Jinja2 而非前後端分離，是為了簡化開發流程，並確保 SEO 與首頁載入效率。
+2. **SQLite 本地化儲存**: 考量到本專案為練習與 MVP 性質，SQLite 提供的零配置特性是最佳選擇。
+3. **動畫優先的靜態資源管理**: 將動畫邏輯集中在 CSS 中，利用 Flask 的 `url_for` 管理靜態資源，確保動畫執行時的資源載入路徑正確。
+4. **藍圖化路由管理 (Blueprints)**: 雖然規模不大，但仍採用 `auth` 與 `main` 分離的路由設計，以便後續擴充功能時結構依然清晰。
+5. **嚴格的雜湊加密**: 使用 `werkzeug.security` 處理密碼雜湊，確保使用者個資在 SQLite 檔案中是安全的。
