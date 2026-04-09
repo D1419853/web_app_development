@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>逢甲吃吃喝喝平台</title>
+  <meta name="description" content="逢甲大學周邊美食搜尋平台，幫你快速找到便宜又好吃的餐廳！">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========== CSS Reset & Variables ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #E8652D;
+      --primary-light: #FF8A55;
+      --primary-dark: #C44D1A;
+      --bg: #FAFAFA;
+      --surface: #FFFFFF;
+      --text: #1A1A2E;
+      --text-secondary: #6B7280;
+      --border: #E5E7EB;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --success: #22C55E;
+      --tag-vegan: #16A34A;
+      --tag-fitness: #7C3AED;
+      --tag-allergy: #DC2626;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --transition: 0.25s ease;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========== Header ========== */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 16px;
+    }
+
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .logo-icon { font-size: 28px; }
+
+    .nav-links {
+      display: flex;
+      gap: 6px;
+    }
+
+    .nav-btn {
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(232, 101, 45, 0.06);
+    }
+
+    /* ========== Hero / Search Section ========== */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 32px 16px 36px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      color: #fff;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .hero p {
+      color: rgba(255,255,255,0.85);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      max-width: 520px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px 48px 14px 18px;
+      border: none;
+      border-radius: 50px;
+      font-size: 15px;
+      font-family: inherit;
+      box-shadow: var(--shadow-lg);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-box input:focus {
+      box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+    }
+
+    .search-box input::placeholder {
+      color: #aaa;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: var(--primary);
+      pointer-events: none;
+    }
+
+    /* ========== Main Container ========== */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ========== Budget Tabs ========== */
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .budget-section {
+      padding: 20px 0 8px;
+    }
+
+    .budget-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .budget-tab {
+      flex-shrink: 0;
+      padding: 10px 18px;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .budget-tab:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .budget-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* ========== Filter Tags ========== */
+    .filter-section {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .filter-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tag {
+      padding: 5px 12px;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .filter-tag:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .filter-tag.vegan.active { background: var(--tag-vegan); border-color: var(--tag-vegan); }
+    .filter-tag.fitness.active { background: var(--tag-fitness); border-color: var(--tag-fitness); }
+    .filter-tag.allergy.active { background: var(--tag-allergy); border-color: var(--tag-allergy); }
+
+    .sort-select {
+      padding: 5px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: inherit;
+      background: var(--surface);
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    /* ========== Results Info ========== */
+    .results-info {
+      padding: 14px 0 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .results-count {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* ========== Restaurant Cards ========== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding-bottom: 24px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+
+    .card-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      background: #f0f0f0;
+    }
+
+    .card-body {
+      padding: 14px 16px 16px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .card-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .card-warning {
+      background: var(--danger);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      animation: pulse-warning 2s infinite;
+    }
+
+    @keyframes pulse-warning {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .card-category {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .meta-item .icon { font-size: 15px; }
+
+    .stars { color: var(--warning); font-size: 14px; letter-spacing: 1px; }
+
+    .cp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+      color: #92400E;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .card-tags {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 50px;
+      white-space: nowrap;
+    }
+
+    .tag-budget { background: #DBEAFE; color: #1E40AF; }
+    .tag-vegan { background: #DCFCE7; color: #166534; }
+    .tag-fitness { background: #EDE9FE; color: #5B21B6; }
+    .tag-allergy { background: #FEE2E2; color: #991B1B; }
+    .tag-type { background: #F3F4F6; color: #374151; }
+    .tag-solo { background: #FEF9C3; color: #854D0E; }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ========== Scam Alert Banner ========== */
+    .alert-banner {
+      background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+      border: 1px solid #FECACA;
+      border-radius: var(--radius);
+      padding: 16px;
+      margin: 20px 0;
+    }
+
+    .alert-banner h3 {
+      color: var(--danger);
+      font-size: 15px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .alert-banner ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .alert-banner li {
+      font-size: 13px;
+      color: #7F1D1D;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .alert-banner li::before {
+      content: '⚠️';
+      position: absolute;
+      left: 0;
+      font-size: 12px;
+    }
+
+    /* ========== Empty State ========== */
+    .empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 15px; }
+
+    /* ========== Modal ========== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: #D1D5DB;
+      border-radius: 2px;
+      margin: 12px auto;
+    }
+
+    .modal-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .modal-body { padding: 20px; }
+
+    .modal-body h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .modal-body .card-category { margin-bottom: 12px; }
+
+    .modal-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .detail-item {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .detail-item .label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .detail-item .value {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .modal-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .modal-warning {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #991B1B;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      padding-bottom: 20px;
+    }
+
+    .modal-actions .btn {
+      padding: 13px 0;
+      font-size: 15px;
+    }
+
+    /* ========== Footer ========== */
+    .footer {
+      text-align: center;
+      padding: 24px 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+      margin-top: 16px;
+    }
+
+    /* ========== Responsive ========== */
+    @media (min-width: 600px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hero h1 { font-size: 28px; }
+      .modal {
+        border-radius: 20px;
+        margin: auto;
+        max-height: 90vh;
+      }
+      .modal-overlay { align-items: center; }
+      @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    }
+
+    @media (min-width: 900px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* ========== Scrollbar ========== */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="#" class="logo" onclick="resetAll()">
+        <span class="logo-icon">🍜</span>
+        <span>逢甲吃吃喝喝</span>
+      </a>
+      <div class="nav-links">
+        <button class="nav-btn active" id="navHome" onclick="showSection('home')">🏠 首頁</button>
+        <button class="nav-btn" id="navAlert" onclick="showSection('alert')">🛡️ 防詐</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero / Search ===== -->
+  <section class="hero">
+    <h1>肚子餓了？快來找吃的！</h1>
+    <p>逢甲大學周邊美食，便宜好吃一次找到</p>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="搜尋店名、料理類型..." oninput="filterCards()">
+      <span class="search-icon">🔍</span>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <!-- ===== Budget Tabs ===== -->
+    <div class="budget-section">
+      <div class="section-title">💰 預算分類</div>
+      <div class="budget-tabs">
+        <button class="budget-tab active" onclick="setBudget('all', this)">全部</button>
+        <button class="budget-tab" onclick="setBudget('0-100', this)">🪙 $100 以下</button>
+        <button class="budget-tab" onclick="setBudget('100-200', this)">🍱 $100~$200</button>
+        <button class="budget-tab" onclick="setBudget('200-300', this)">🍽️ $200~$300</button>
+        <button class="budget-tab" onclick="setBudget('300-400', this)">🥩 $300~$400</button>
+        <button class="budget-tab" onclick="setBudget('400-500', this)">🍷 $400~$500</button>
+        <button class="budget-tab" onclick="setBudget('500-up', this)">👑 $500 以上</button>
+      </div>
+    </div>
+
+    <!-- ===== Filter Row ===== -->
+    <div class="filter-section">
+      <div class="filter-row">
+        <span class="filter-label">🏷️ 篩選：</span>
+        <div class="filter-tags">
+          <button class="filter-tag vegan" onclick="toggleTag('vegan', this)">🌱 素食</button>
+          <button class="filter-tag fitness" onclick="toggleTag('fitness', this)">💪 健身餐</button>
+          <button class="filter-tag allergy" onclick="toggleTag('allergy', this)">⚠️ 過敏友善</button>
+        </div>
+        <select class="sort-select" id="sortSelect" onchange="filterCards()">
+          <option value="default">排序方式</option>
+          <option value="cp-desc">CP值 高→低</option>
+          <option value="cp-asc">CP值 低→高</option>
+          <option value="price-asc">價格 低→高</option>
+          <option value="price-desc">價格 高→低</option>
+          <option value="rating-desc">評分 高→低</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ===== Results Info ===== -->
+    <div class="results-info">
+      找到 <span class="results-count" id="resultsCount">0</span> 間餐廳
+    </div>
+
+    <!-- ===== Cards Grid ===== -->
+    <div class="cards-grid" id="cardsGrid"></div>
+
+    <!-- ===== Empty State ===== -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="icon">😢</div>
+      <p>找不到符合條件的餐廳<br>試試調整篩選條件吧！</p>
+    </div>
+
+    <!-- ===== Scam Alert Section ===== -->
+    <div id="alertSection" style="display:none;">
+      <div class="alert-banner" style="margin-top:24px;">
+        <h3>🛡️ 防詐騙小提醒 — 逢甲覓食安全守則</h3>
+        <ul>
+          <li>不要在非正式平台上先付款，面交付現最安全</li>
+          <li>遇到「限時搶購」「加LINE私聊優惠」要小心</li>
+          <li>標示⚠️韭菜警報的店家，代表有多人反映價格異常</li>
+          <li>不要點擊不明連結或掃描來路不明的 QR Code</li>
+          <li>多看評價，尤其注意「逢甲人認證」的評論更可信</li>
+          <li>團購/揪團務必確認對方身份，避免先匯款</li>
+        </ul>
+      </div>
+      <div class="alert-banner" style="border-color: #FDE68A; background: linear-gradient(135deg, #FFFBEB, #FEF3C7);">
+        <h3 style="color: #92400E;">🔍 如何辨別韭菜陷阱？</h3>
+        <ul>
+          <li style="color: #78350F;">菜單價格與實際結帳差異大 → 高機率是韭菜店</li>
+          <li style="color: #78350F;">網路評價很多但內容雷同 → 可能為假評論</li>
+          <li style="color: #78350F;">份量明顯與照片不符 → 建議先看其他人的實拍</li>
+          <li style="color: #78350F;">只收現金且沒有明確價目表 → 需要多加留意</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== Modal ===== -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <img class="modal-img" id="modalImg" src="" alt="">
+      <div class="modal-body">
+        <div class="card-header">
+          <h2 id="modalName"></h2>
+          <span class="card-warning" id="modalWarning" style="display:none;">⚠️ 韭菜警報</span>
+        </div>
+        <div class="card-category" id="modalCategory"></div>
+        <div class="modal-detail-grid">
+          <div class="detail-item">
+            <div class="label">💰 平均價位</div>
+            <div class="value" id="modalPrice"></div>
+          </div>
+          <div class="detail-item">
+            <div class="label">⭐ 評分</div>
+            <div class="value" id="modalRating"></div>
+          </div>
+          <div class="detail-item">
+            <div class="label">📊 CP值</div>
+            <div class="value" id="modalCp"></div>
+          </div>
+          <div class="detail-item">
+            <div class="label">📍 距離</div>
+            <div class="value" id="modalDistance"></div>
+          </div>
+        </div>
+        <div class="card-tags" id="modalTags"></div>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-warning" id="modalWarningBox" style="display:none;">
+          <span>🚨</span>
+          <span id="modalWarningText"></span>
+        </div>
+        <div class="modal-actions">
+          <a class="btn btn-primary" id="modalMapBtn" href="#" target="_blank">📍 Google Maps 導航</a>
+          <a class="btn btn-outline" id="modalContactBtn" href="#" target="_blank">💬 聯絡店家</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    © 2026 逢甲吃吃喝喝平台 — 第五組製作 ❤️
+  </footer>
+
+<script>
+// ==================== 假資料 ====================
+const restaurants = [
+  {
+    id: 1,
+    name: "阿嬤滷肉飯",
+    category: "中式 · 滷肉飯",
+    price: 45,
+    rating: 4.6,
+    cp: 4.8,
+    budget: "0-100",
+    tags: ["allergy"],
+    image: "https://images.unsplash.com/photo-1569058242567-93de6f36f8eb?w=400&h=300&fit=crop",
+    description: "逢甲巷弄裡的隱藏版滷肉飯，魯汁濃郁、肥瘦均勻。加蛋只要 5 元，學生最愛的銅板美食！",
+    distance: "步行 3 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+滷肉飯",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 2,
+    name: "綠光沙拉吧",
+    category: "輕食 · 沙拉",
+    price: 95,
+    rating: 4.3,
+    cp: 4.0,
+    budget: "100-200",
+    tags: ["vegan", "fitness"],
+    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop",
+    description: "健身族的最愛！可自選配料的客製化沙拉，蛋白質滿滿。素食者也有豐富選擇，每份都超過500g。",
+    distance: "步行 5 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+沙拉",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 3,
+    name: "好運炸雞排",
+    category: "炸物 · 雞排",
+    price: 55,
+    rating: 4.5,
+    cp: 4.7,
+    budget: "0-100",
+    tags: [],
+    image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=300&fit=crop",
+    description: "逢甲夜市人氣最高的雞排攤！外皮酥脆、肉汁豐富，而且一份份量超大，絕對吃得飽！",
+    distance: "步行 2 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+雞排",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 4,
+    name: "黑皮燒肉丼",
+    category: "日式 · 丼飯",
+    price: 150,
+    rating: 4.4,
+    cp: 3.8,
+    budget: "100-200",
+    tags: [],
+    image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=300&fit=crop",
+    description: "道地日式燒肉丼，肉片現烤、醬汁特調。聚餐適合！雙人套餐有打折，適合約朋友一起吃。",
+    distance: "步行 7 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+燒肉丼",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 5,
+    name: "大胃王便當",
+    category: "便當 · 自助餐",
+    price: 70,
+    rating: 4.2,
+    cp: 4.5,
+    budget: "0-100",
+    tags: ["allergy"],
+    image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
+    description: "三菜一主食只要 70 元！配菜每天換，份量大到連男生都吃不完。可免費加飯加湯，是學生的食堂首選。",
+    distance: "步行 4 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+便當",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 6,
+    name: "不明海鮮燒烤",
+    category: "燒烤 · 海鮮",
+    price: 200,
+    rating: 2.8,
+    cp: 1.5,
+    budget: "200-300",
+    tags: [],
+    image: "https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&h=300&fit=crop",
+    description: "位於逢甲夜市尾端，攤位無明確價目表，多位同學反映結帳金額與預期不符。",
+    distance: "步行 8 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+燒烤",
+    contactUrl: "#",
+    isBlacklisted: true,
+    warningText: "多人反映結帳金額與菜單不符，請注意確認價格再下單！"
+  },
+  {
+    id: 7,
+    name: "素心蔬食館",
+    category: "素食 · 簡餐",
+    price: 85,
+    rating: 4.1,
+    cp: 4.2,
+    budget: "0-100",
+    tags: ["vegan"],
+    image: "https://images.unsplash.com/photo-1543339308-d595c4f5f5ab?w=400&h=300&fit=crop",
+    description: "全素食餐廳，每日推出不同套餐。口味清爽不油膩，環境乾淨舒適，適合想吃健康的同學。",
+    distance: "步行 6 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+素食",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 8,
+    name: "肌肉廚房",
+    category: "健康餐 · 水煮餐",
+    price: 110,
+    rating: 4.4,
+    cp: 4.0,
+    budget: "100-200",
+    tags: ["fitness", "allergy"],
+    image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop",
+    description: "健身族的天堂！提供高蛋白低脂餐，可客製化蛋白質克數。過敏原標示清楚，吃得安心又放心。",
+    distance: "步行 5 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+健康餐",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 9,
+    name: "一口煎餃",
+    category: "中式 · 煎餃",
+    price: 40,
+    rating: 4.7,
+    cp: 4.9,
+    budget: "0-100",
+    tags: [],
+    image: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=400&h=300&fit=crop",
+    description: "10 顆煎餃只要 40 元！皮薄餡多、底部煎得金黃酥脆。搭配酸辣醬超對味，是下課後的最佳小食。",
+    distance: "步行 2 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+煎餃",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 10,
+    name: "XX頂級和牛",
+    category: "日式 · 和牛",
+    price: 350,
+    rating: 3.1,
+    cp: 1.2,
+    budget: "300-400",
+    tags: [],
+    image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop",
+    description: "號稱A5和牛但多人質疑肉質。價格偏高且份量少，網路評價兩極化。",
+    distance: "步行 10 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+和牛",
+    contactUrl: "#",
+    isBlacklisted: true,
+    warningText: "多位同學反映肉質與宣傳不符、份量過少，CP值極低，請謹慎消費！"
+  },
+  {
+    id: 11,
+    name: "鮮果茶坊",
+    category: "飲料 · 鮮榨果汁",
+    price: 35,
+    rating: 4.3,
+    cp: 4.6,
+    budget: "0-100",
+    tags: ["vegan"],
+    image: "https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=400&h=300&fit=crop",
+    description: "新鮮水果現榨，不加糖不加水！招牌芒果冰沙和西瓜汁是夏天必喝。價格超親民的消暑聖品。",
+    distance: "步行 3 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+果汁",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 12,
+    name: "韓拌飯食堂",
+    category: "韓式 · 拌飯",
+    price: 100,
+    rating: 4.5,
+    cp: 4.3,
+    budget: "100-200",
+    tags: [],
+    image: "https://images.unsplash.com/photo-1553163147-622ab57be1c7?w=400&h=300&fit=crop",
+    description: "道地韓式拌飯，石鍋燒得滋滋作響。附贈小菜無限續，泡菜是自家醃的，酸辣剛好超下飯！",
+    distance: "步行 6 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+韓式",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 13,
+    name: "老四川麻辣鍋",
+    category: "火鍋 · 麻辣",
+    price: 450,
+    rating: 4.6,
+    cp: 3.5,
+    budget: "400-500",
+    tags: [],
+    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop",
+    description: "道地四川麻辣鍋底，湯頭濃郁香麻。肉品新鮮、菜盤豐富，冬天聚餐首選！雙人套餐更划算。",
+    distance: "步行 9 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+麻辣鍋",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 14,
+    name: "鼎極鐵板燒",
+    category: "鐵板燒 · 套餐",
+    price: 520,
+    rating: 4.7,
+    cp: 3.8,
+    budget: "500-up",
+    tags: ["allergy"],
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop",
+    description: "高級鐵板燒套餐，主廚現場料理表演。食材頂級、擺盤精緻，慶生或約會的好選擇！",
+    distance: "步行 12 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+鐵板燒",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 15,
+    name: "義享天開義大利麵",
+    category: "義式 · 義大利麵",
+    price: 250,
+    rating: 4.3,
+    cp: 4.0,
+    budget: "200-300",
+    tags: ["vegan"],
+    image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&h=300&fit=crop",
+    description: "手工義大利麵條Q彈有嚼勁，白醬濃郁、紅醬微酸。有素食口味可選，附湯品和麵包。",
+    distance: "步行 7 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+義大利麵",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 16,
+    name: "澳美客牛排館",
+    category: "西式 · 牛排",
+    price: 380,
+    rating: 4.2,
+    cp: 3.3,
+    budget: "300-400",
+    tags: [],
+    image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=400&h=300&fit=crop",
+    description: "厚切牛排外焦裡嫩，搭配蘑菇醬超美味。附沙拉吧吃到飽，聚餐約會兩相宜。",
+    distance: "步行 10 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+牛排",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  },
+  {
+    id: 17,
+    name: "海港自助餐廳",
+    category: "Buffet · 吃到飽",
+    price: 580,
+    rating: 4.0,
+    cp: 3.2,
+    budget: "500-up",
+    tags: ["allergy"],
+    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop",
+    description: "海鮮、生魚片、甜點通通吃到飽！過敏原標示清楚，適合大型聚餐或慶祝活動。",
+    distance: "步行 15 分鐘",
+    mapUrl: "https://www.google.com/maps/search/逢甲+吃到飽",
+    contactUrl: "#",
+    isBlacklisted: false,
+    warningText: ""
+  }
+];
+
+// ==================== 狀態管理 ====================
+let currentBudget = 'all';
+let activeTags = new Set();
+
+// ==================== 篩選與渲染 ====================
+function filterCards() {
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  const sort = document.getElementById('sortSelect').value;
+
+  let filtered = restaurants.filter(r => {
+    // Budget filter (by price range)
+    if (currentBudget !== 'all') {
+      const [min, max] = getBudgetRange(currentBudget);
+      if (r.price < min || r.price > max) return false;
+    }
+    // Tag filter
+    if (activeTags.size > 0) {
+      const hasTag = [...activeTags].some(t => r.tags.includes(t));
+      if (!hasTag) return false;
+    }
+    // Search filter
+    if (query) {
+      const searchable = (r.name + r.category + r.description + r.tags.join('')).toLowerCase();
+      if (!searchable.includes(query)) return false;
+    }
+    return true;
+  });
+
+  // Sorting
+  switch (sort) {
+    case 'cp-desc': filtered.sort((a, b) => b.cp - a.cp); break;
+    case 'cp-asc': filtered.sort((a, b) => a.cp - b.cp); break;
+    case 'price-asc': filtered.sort((a, b) => a.price - b.price); break;
+    case 'price-desc': filtered.sort((a, b) => b.price - a.price); break;
+    case 'rating-desc': filtered.sort((a, b) => b.rating - a.rating); break;
+  }
+
+  renderCards(filtered);
+}
+
+function renderCards(list) {
+  const grid = document.getElementById('cardsGrid');
+  const empty = document.getElementById('emptyState');
+  const count = document.getElementById('resultsCount');
+
+  count.textContent = list.length;
+
+  if (list.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+
+  grid.innerHTML = list.map(r => {
+    const stars = '★'.repeat(Math.round(r.rating)) + '☆'.repeat(5 - Math.round(r.rating));
+    const budgetLabel = getBudgetLabel(r.price);
+
+    let tagsHtml = `<span class="tag tag-budget">${budgetLabel}</span>`;
+    if (r.tags.includes('vegan')) tagsHtml += '<span class="tag tag-vegan">🌱 素食</span>';
+    if (r.tags.includes('fitness')) tagsHtml += '<span class="tag tag-fitness">💪 健身餐</span>';
+    if (r.tags.includes('allergy')) tagsHtml += '<span class="tag tag-allergy">⚠️ 過敏友善</span>';
+
+    return `
+      <div class="card" onclick="openModal(${r.id})">
+        <img class="card-img" src="${r.image}" alt="${r.name}" loading="lazy">
+        <div class="card-body">
+          <div class="card-header">
+            <span class="card-name">${r.name}</span>
+            ${r.isBlacklisted ? '<span class="card-warning">⚠️ 韭菜警報</span>' : ''}
+          </div>
+          <div class="card-category">${r.category}</div>
+          <div class="card-meta">
+            <span class="meta-item"><span class="stars">${stars}</span> ${r.rating}</span>
+            <span class="cp-badge">📊 CP ${r.cp}</span>
+            <span class="meta-item"><span class="icon">💰</span>$${r.price}</span>
+          </div>
+          <div class="card-tags">${tagsHtml}</div>
+          <div class="card-actions">
+            <a class="btn btn-primary" href="${r.mapUrl}" target="_blank" onclick="event.stopPropagation()">📍 導航</a>
+            <button class="btn btn-outline" onclick="event.stopPropagation(); openModal(${r.id})">📋 詳細</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ==================== 預算切換 ====================
+function setBudget(budget, btn) {
+  currentBudget = budget;
+  document.querySelectorAll('.budget-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterCards();
+}
+
+// ==================== 標籤篩選 ====================
+function toggleTag(tag, btn) {
+  if (activeTags.has(tag)) {
+    activeTags.delete(tag);
+    btn.classList.remove('active');
+  } else {
+    activeTags.add(tag);
+    btn.classList.add('active');
+  }
+  filterCards();
+}
+
+// ==================== Modal ====================
+function openModal(id) {
+  const r = restaurants.find(x => x.id === id);
+  if (!r) return;
+
+  document.getElementById('modalImg').src = r.image;
+  document.getElementById('modalName').textContent = r.name;
+  document.getElementById('modalCategory').textContent = r.category;
+  document.getElementById('modalPrice').textContent = `$${r.price}`;
+  document.getElementById('modalRating').textContent = `${r.rating} / 5`;
+  document.getElementById('modalCp').textContent = `${r.cp} / 5`;
+  document.getElementById('modalDistance').textContent = r.distance;
+  document.getElementById('modalDesc').textContent = r.description;
+  document.getElementById('modalMapBtn').href = r.mapUrl;
+  document.getElementById('modalContactBtn').href = r.contactUrl || '#';
+
+  // Tags
+  let tagsHtml = '';
+  const budgetLabel = getBudgetLabel(r.price);
+  tagsHtml += `<span class="tag tag-budget">${budgetLabel}</span>`;
+  if (r.tags.includes('vegan')) tagsHtml += '<span class="tag tag-vegan">🌱 素食</span>';
+  if (r.tags.includes('fitness')) tagsHtml += '<span class="tag tag-fitness">💪 健身餐</span>';
+  if (r.tags.includes('allergy')) tagsHtml += '<span class="tag tag-allergy">⚠️ 過敏友善</span>';
+  document.getElementById('modalTags').innerHTML = tagsHtml;
+
+  // Warning
+  const warningEl = document.getElementById('modalWarning');
+  const warningBox = document.getElementById('modalWarningBox');
+  const warningText = document.getElementById('modalWarningText');
+  if (r.isBlacklisted) {
+    warningEl.style.display = '';
+    warningBox.style.display = 'flex';
+    warningText.textContent = r.warningText;
+  } else {
+    warningEl.style.display = 'none';
+    warningBox.style.display = 'none';
+  }
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ==================== 頁面切換 ====================
+function showSection(section) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (section === 'home') {
+    document.getElementById('navHome').classList.add('active');
+    document.getElementById('alertSection').style.display = 'none';
+    document.querySelector('.budget-section').style.display = '';
+    document.querySelector('.filter-section').style.display = '';
+    document.querySelector('.results-info').style.display = '';
+    document.getElementById('cardsGrid').style.display = '';
+    document.getElementById('emptyState').style.display = 'none';
+    filterCards();
+  } else {
+    document.getElementById('navAlert').classList.add('active');
+    document.getElementById('alertSection').style.display = 'block';
+    document.querySelector('.budget-section').style.display = 'none';
+    document.querySelector('.filter-section').style.display = 'none';
+    document.querySelector('.results-info').style.display = 'none';
+    document.getElementById('cardsGrid').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'none';
+  }
+}
+
+function resetAll() {
+  currentBudget = 'all';
+  activeTags.clear();
+  document.getElementById('searchInput').value = '';
+  document.getElementById('sortSelect').value = 'default';
+  document.querySelectorAll('.budget-tab').forEach(b => b.classList.remove('active'));
+  document.querySelector('.budget-tab').classList.add('active');
+  document.querySelectorAll('.filter-tag').forEach(b => b.classList.remove('active'));
+  showSection('home');
+}
+
+// ==================== Keyboard ====================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+
+// ==================== 預算工具函數 ====================
+function getBudgetRange(budget) {
+  switch (budget) {
+    case '0-100': return [0, 99];
+    case '100-200': return [100, 199];
+    case '200-300': return [200, 299];
+    case '300-400': return [300, 399];
+    case '400-500': return [400, 499];
+    case '500-up': return [500, 99999];
+    default: return [0, 99999];
+  }
+}
+
+function getBudgetLabel(price) {
+  if (price < 100) return '$100 以下';
+  if (price < 200) return '$100~$200';
+  if (price < 300) return '$200~$300';
+  if (price < 400) return '$300~$400';
+  if (price < 500) return '$400~$500';
+  return '$500 以上';
+}
+
+// ==================== 初始載入 ====================
+filterCards();
+</script>
+
+</body>
+</html>
