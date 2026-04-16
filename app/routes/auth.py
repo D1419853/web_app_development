@@ -1,32 +1,50 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from app.models.user import User
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    """
-    註冊新使用者。
-    GET: 顯示註冊表單。
-    POST: 處理註冊邏輯。
-    """
-    # 邏輯預留：解析表單、檢查重複、密碼雜湊、存入 DB
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        email = request.form.get('email')
+        
+        if not username or not password:
+            flash('請填寫必填欄位')
+            return render_template('auth/register.html')
+            
+        if User.get_by_username(username):
+            flash('帳號已存在')
+            return render_template('auth/register.html')
+            
+        hashed_password = generate_password_hash(password)
+        User.create(username, hashed_password, email)
+        flash('註冊成功，請登入')
+        return redirect(url_for('auth.login'))
+        
     return render_template('auth/register.html')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    """
-    使用者登入。
-    GET: 顯示登入表單。
-    POST: 驗證帳密並寫入 Session。
-    """
-    # 邏輯預留：驗證帳密、設定 session['user_id']
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        user = User.get_by_username(username)
+        if user and check_password_hash(user['password_hash'], password):
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            flash(f'歡迎回來, {username}!')
+            return redirect(url_for('main.index'))
+            
+        flash('帳號或密碼錯誤')
+        
     return render_template('auth/login.html')
 
 @auth_bp.route('/logout')
 def logout():
-    """
-    使用者登出。
-    清除 Session 並重導向至首頁。
-    """
-    # 邏輯預留：session.clear()
+    session.clear()
+    flash('您已登出')
     return redirect(url_for('main.index'))

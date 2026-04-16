@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}占卜結果 - {{ fortune.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6 text-center">
+        <h2 class="mb-4">您的占卜結果已出爐</h2>
+        
+        <div class="card p-5 mb-4">
+            {% if fortune.image_path %}
+                <img src="{{ fortune.image_path }}" class="img-fluid rounded mb-4 mx-auto" style="max-height: 300px;" alt="結果圖片">
+            {% endif %}
+            
+            <h1 class="display-4 fortune-title mb-3">{{ fortune.title }}</h1>
+            <div class="lead text-start mb-4" style="line-height: 1.8;">
+                {{ fortune.content | replace('\n', '<br>') | safe }}
+            </div>
+            
+            <hr class="border-secondary mb-4">
+            
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                {% if session.get('user_id') %}
+                <form action="{{ url_for('main.save_record') }}" method="POST">
+                    <input type="hidden" name="fortune_id" value="{{ fortune.id }}">
+                    <button type="submit" class="btn btn-primary btn-lg">儲存至歷史紀錄</button>
+                </form>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-warning btn-lg">登入以儲存紀錄</a>
+                {% endif %}
+                
+                <a href="{{ url_for('main.index') }}" class="btn btn-secondary btn-lg">回首頁</a>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <p class="text-secondary">將這份好運分享給好友：</p>
+            <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-outline-light btn-sm">分享到 LINE</button>
+                <button class="btn btn-outline-light btn-sm">分享到 Facebook</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <h1 class="display-3 fw-bold fortune-title mb-4">尋求心靈的指引</h1>
+    <p class="lead mb-5">透過古老的智慧與現代的便利，為您的人生抉擇提供方向。</p>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card p-4 mb-4">
+                <div class="shake-on-click">
+                    <img src="{{ url_for('static', filename='images/fortune_stick.png') }}" class="img-fluid mb-4" style="max-height: 200px;" alt="籤筒">
+                </div>
+                <h3 class="h4 mb-3">線上求籤</h3>
+                <p class="text-secondary mb-4">誠心祈求，搖動籤筒，獲取今日的靈感與指引。</p>
+                <form action="{{ url_for('main.draw') }}" method="POST">
+                    <input type="hidden" name="type" value="籤詩">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">開始求籤</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card p-4 mb-4">
+                <img src="{{ url_for('static', filename='images/tarot_cards.png') }}" class="img-fluid mb-4" style="max-height: 200px;" alt="塔羅牌">
+                <h3 class="h4 mb-3">塔羅占卜</h3>
+                <p class="text-secondary mb-4">深呼吸，選擇一張牌，揭開潛意識中的神祕訊息。</p>
+                <form action="{{ url_for('main.draw') }}" method="POST">
+                    <input type="hidden" name="type" value="塔羅">
+                    <button type="submit" class="btn btn-primary btn-lg w-100" disabled>即將推出</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 text-center">
+        <div class="h1">🔒</div>
+        <h4>安全紀錄</h4>
+        <p class="text-secondary">登入會員即可儲存所有算命結果，隨時回顧。</p>
+    </div>
+    <div class="col-md-4 text-center">
+        <div class="h1">💳</div>
+        <h4>線上捐贈</h4>
+        <p class="text-secondary">數位化的香油錢，護持系統運作，功德無量。</p>
+    </div>
+    <div class="col-md-4 text-center">
+        <div class="h1">📢</div>
+        <h4>社群分享</h4>
+        <p class="text-secondary">將獲得的幸運結果與親友分享，傳遞好運。</p>
+    </div>
+</div>
+{% endblock %}
