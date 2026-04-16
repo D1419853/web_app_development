@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Flask/Instance
+instance/
+.pytest_cache/
+
+# Databases
+*.db
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+.gemini/
